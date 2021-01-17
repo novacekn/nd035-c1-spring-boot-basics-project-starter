@@ -61,7 +61,7 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="nav-notes" role="tabpanel" aria-labelledby="nav-notes-tab">
-                        <button style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showNoteModal()">
+                        <button style="margin: 0.25em;" type="button" id="add-note-button" class="btn btn-info float-right" onclick="showNoteModal()">
                             + Add a New Note
                         </button>
 
@@ -77,11 +77,11 @@
                                 <tbody>
                                     <tr th:each="note : ${notes}">
                                         <td>
-                                            <button type="button" class="btn btn-success" th:onclick="showNoteModal([[${note.noteId}]], [[${note.noteTitle}]], [[${note.noteDescription}]])">Edit</button>
-                                            <a class="btn btn-danger" th:href="@{/home/notes/delete/{noteId}(noteId=${note.noteId})}">Delete</a>
+                                            <button type="button" th:id="'editNoteButton' + ${note.noteId}" class="btn btn-success" th:onclick="showNoteModal([[${note.noteId}]], [[${note.noteTitle}]], [[${note.noteDescription}]])">Edit</button>
+                                            <a class="btn btn-danger" th:id="'deleteNoteButton' + ${note.noteId}" th:href="@{/home/notes/delete/{noteId}(noteId=${note.noteId})}">Delete</a>
                                         </td>
-                                        <th scope="row" th:text="${note.noteTitle}"></th>
-                                        <td th:text="${note.noteDescription}"></td>
+                                        <th th:id="'noteTitle' + ${note.noteId}" scope="row" th:text="${note.noteTitle}"></th>
+                                        <td th:id="'noteDescription' + ${note.noteId}" th:text="${note.noteDescription}"></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -136,12 +136,12 @@
                                 <tbody>
                                 <tr th:each="credential : ${credentials}">
                                     <td>
-                                        <button type="button" class="btn btn-success" th:onclick="showCredentialModal([[${credential.credentialId}]], [[${credential.url}]], [[${credential.username}]], [[${credential.getDecryptedPassword()}]])">Edit</button>
-                                        <a class="btn btn-danger" th:href="@{/home/credentials/delete/{credentialId}(credentialId=${credential.credentialId})}">Delete</a>
+                                        <button type="button" th:id="'editCredentialButton' + ${credential.credentialId}" class="btn btn-success" th:onclick="showCredentialModal([[${credential.credentialId}]], [[${credential.url}]], [[${credential.username}]], [[${credential.getDecryptedPassword()}]])">Edit</button>
+                                        <a class="btn btn-danger" th:id="'deleteCredentialButton' + ${credential.credentialId}" th:href="@{/home/credentials/delete/{credentialId}(credentialId=${credential.credentialId})}">Delete</a>
                                     </td>
-                                    <th scope="row" th:text="${credential.url}"></th>
-                                    <td th:text="${credential.username}"></td>
-                                    <td th:text="${credential.password}"></td>
+                                    <th th:id="'credentialUrl' + ${credential.credentialId}" scope="row" th:text="${credential.url}"></th>
+                                    <td th:id="'credentialUsername' + ${credential.credentialId}" th:text="${credential.username}"></td>
+                                    <td th:id="'credentialPassword' + ${credential.credentialId}" th:text="${credential.password}"></td>
                                 </tr>
                                 </tbody>
                             </table>

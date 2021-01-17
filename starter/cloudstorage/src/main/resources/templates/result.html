@@ -12,7 +12,7 @@
         <div class="container justify-content-center w-50 p-3" style="margin-top: 5em;">
             <div th:if="${success}" class="alert alert-success fill-parent">
                 <h1 class="display-5">Success</h1>
-                <span th:text="${successMessage}"></span>
+                <span id="success-msg" th:text="${successMessage}"></span>
                 <span><a th:href="@{/home}">Click here to continue</a></span>
             </div>
             <div th:if="${error}" class="alert alert-danger fill-parent">
