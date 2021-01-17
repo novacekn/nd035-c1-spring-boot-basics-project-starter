@@ -76,6 +76,96 @@ class CloudStorageApplicationTests {
 		noteSubmit.submit();
 	}
 
+	public void createCredential() throws InterruptedException {
+		createNewUser();
+		loginUser();
+		Thread.sleep(1000);
+		WebElement navCredsTab = driver.findElement(By.id("nav-credentials-tab"));
+		navCredsTab.click();
+		WebElement addCredentialButton = driver.findElement(By.id("add-credential-button"));
+		Thread.sleep(1000);
+		addCredentialButton.click();
+		Thread.sleep(1000);
+		WebElement urlField = driver.findElement(By.name("url"));
+		WebElement usernameField = driver.findElement(By.name("username"));
+		WebElement passwordField = driver.findElement(By.name("password"));
+		WebElement credentialSubmitButton = driver.findElement(By.id("credentialSubmit"));
+		urlField.sendKeys("url1");
+		usernameField.sendKeys("username1");
+		passwordField.sendKeys("password1");
+		credentialSubmitButton.submit();
+	}
+
+	@Test
+	public void testCredentialCreation() throws InterruptedException {
+		createCredential();
+		Assertions.assertEquals("Result", driver.getTitle());
+		Assertions.assertEquals("The credential has been successfully created.", driver.findElement(By.id("success-msg")).getText());
+	}
+
+	@Test
+	public void testCredentialsAreDisplayed() throws InterruptedException {
+		createCredential();
+		driver.get("http://localhost:" + this.port + "/home");
+		driver.findElement(By.id("nav-credentials-tab")).click();
+		Thread.sleep(1000);
+		WebElement credentialUrl1 = driver.findElement(By.id("credentialUrl1"));
+		WebElement credentialUsername1 = driver.findElement(By.id("credentialUsername1"));
+		WebElement credentialPassword1 = driver.findElement(By.id("credentialPassword1"));
+		Assertions.assertEquals("url1", credentialUrl1.getText());
+		Assertions.assertEquals("username1", credentialUsername1.getText());
+		Assertions.assertNotEquals("password1", credentialPassword1.getText());
+		Assertions.assertFalse(credentialPassword1.getText().isEmpty());
+	}
+
+	@Test
+	public void testEditCredential() throws InterruptedException {
+		createCredential();
+		driver.get("http://localhost:" + this.port + "/home");
+		driver.findElement(By.id("nav-credentials-tab")).click();
+		Thread.sleep(1000);
+		driver.findElement(By.id("editCredentialButton1")).click();
+		Thread.sleep(1000);
+		WebElement credUrl = driver.findElement(By.name("url"));
+		WebElement credUsername = driver.findElement(By.name("username"));
+		WebElement credPassword = driver.findElement(By.name("password"));
+		credUrl.clear();
+		credUrl.sendKeys("url2");
+		credUsername.clear();
+		credUsername.sendKeys("username2");
+		credPassword.clear();
+		credPassword.sendKeys("password2");
+		driver.findElement(By.id("credentialSubmit")).submit();
+		Assertions.assertEquals("Result", driver.getTitle());
+		Assertions.assertEquals("The credential has been successfully edited.", driver.findElement(By.id("success-msg")).getText());
+		driver.get("http://localhost:" + this.port + "/home");
+		driver.findElement(By.id("nav-credentials-tab")).click();
+		Thread.sleep(1000);
+		WebElement credentialUrl1 = driver.findElement(By.id("credentialUrl1"));
+		WebElement credentialUsername1 = driver.findElement(By.id("credentialUsername1"));
+		WebElement credentialPassword1 = driver.findElement(By.id("credentialPassword1"));
+		Assertions.assertEquals("url2", credentialUrl1.getText());
+		Assertions.assertEquals("username2", credentialUsername1.getText());
+		Assertions.assertNotEquals("password2", credentialPassword1.getText());
+		Assertions.assertFalse(credentialPassword1.getText().isEmpty());
+	}
+
+	@Test
+	public void testDeleteCredential() throws InterruptedException {
+		createCredential();
+		driver.get("http://localhost:" + this.port + "/home");
+		driver.findElement(By.id("nav-credentials-tab")).click();
+		Thread.sleep(1000);
+		driver.findElement(By.linkText("Delete")).click();
+		Assertions.assertEquals("Result", driver.getTitle());
+		Assertions.assertEquals("The credential has been deleted successfully.", driver.findElement(By.id("success-msg")).getText());
+		driver.get("http://localhost:" + this.port + "/home");
+		driver.findElement(By.id("nav-credentials-tab")).click();
+		Thread.sleep(1000);
+		int rows = driver.findElements(By.xpath("//table[@id='credentialTable']/tbody/tr")).size();
+		Assertions.assertEquals(0, rows);
+	}
+
 	@Test
 	public void testNoteCreation() throws InterruptedException {
 		createNote();
@@ -126,6 +216,24 @@ class CloudStorageApplicationTests {
 		WebElement noteDescription1 = driver.findElement(By.id("noteDescription1"));
 		Assertions.assertEquals("Title 2", noteTitle1.getText());
 		Assertions.assertEquals("Description 2", noteDescription1.getText());
+	}
+
+	@Test
+	public void testDeleteNote() throws InterruptedException {
+		createNote();
+		driver.get("http://localhost:" + this.port + "/home");
+		WebElement navNotesTab = driver.findElement(By.id("nav-notes-tab"));
+		navNotesTab.click();
+		Thread.sleep(1000);
+		driver.findElement(By.linkText("Delete")).click();
+		Assertions.assertEquals("Result", driver.getTitle());
+		Assertions.assertEquals("The note has been deleted successfully.", driver.findElement(By.id("success-msg")).getText());
+		driver.get("http://localhost:" + this.port + "/home");
+		WebElement navNotesTab2 = driver.findElement(By.id("nav-notes-tab"));
+		navNotesTab2.click();
+		Thread.sleep(1000);
+		int noteTableBody = driver.findElements(By.xpath("//table[@id='userTable']/tbody/tr")).size();
+		Assertions.assertEquals(0, noteTableBody);
 	}
 
 	public void loginUser() {
