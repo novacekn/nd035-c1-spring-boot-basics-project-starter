@@ -4,14 +4,20 @@ import com.udacity.jwdnd.course1.cloudstorage.models.Credential;
 import com.udacity.jwdnd.course1.cloudstorage.models.Note;
 import com.udacity.jwdnd.course1.cloudstorage.models.UserFile;
 import com.udacity.jwdnd.course1.cloudstorage.services.*;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
+import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.List;
@@ -194,5 +200,12 @@ public class HomeController {
                 .contentType(MediaType.parseMediaType(userFile.getContentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + userFile.getFileName())
                 .body(userFile.getFileData());
+    }
+
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    public String handleError(SizeLimitExceededException e, Model model) {
+        model.addAttribute("statusCode", "403 FORBIDDEN");
+        model.addAttribute("errorMessage", "The file you are attempting to upload is too large.");
+        return "error";
     }
 }
